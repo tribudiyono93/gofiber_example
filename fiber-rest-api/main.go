@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/database"
 	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/router"
@@ -24,6 +25,7 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New())
 	app.Use(logger.New())
+	app.Use(recover.New())
 
 	//register router
 	router.Routes(app)

@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/entity"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
@@ -28,7 +29,7 @@ func Connect()  {
 		panic("Failed to create a connection to database")
 	}
 
-	//DB.AutoMigrate()
+	DB.AutoMigrate(&entity.User{}, &entity.UserModuleRole{}, &entity.Book{})
 
 	//set connection pooling
 	sql, err := DB.DB()
