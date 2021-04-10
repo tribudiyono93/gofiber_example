@@ -16,7 +16,7 @@ var moduleCAdmin = map[string][]string {
 	"moduleC": {"ADMIN"},
 }
 
-func Routes(app *fiber.App) {
+func Register(app *fiber.App) {
 	//sample
 	app.Get("/", handler.Hello)
 	app.Get("/error", handler.Error)

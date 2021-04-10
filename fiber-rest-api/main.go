@@ -28,7 +28,7 @@ func main() {
 	app.Use(recover.New())
 
 	//register router
-	router.Routes(app)
+	router.Register(app)
 
 	//graceful shutdown
 	c := make(chan os.Signal, 1)
