@@ -26,7 +26,7 @@ func Hello(c *fiber.Ctx) error {
 
 func Error(c *fiber.Ctx) error {
 	return c.Status(http.StatusBadRequest).JSON(response.Error{
-		Code: entity.UserNotFound,
-		Message: entity.StatusText[entity.UserNotFound],
+		Code: response.UserNotFound,
+		Message: response.StatusText[response.UserNotFound],
 	})
 }

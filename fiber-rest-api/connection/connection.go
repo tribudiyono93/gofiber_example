@@ -1,4 +1,4 @@
-package database
+package connection
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ const (
 	maxOpenCons = 10
 )
 
-func Connect()  {
+func ConnectDB()  {
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
 	dbHost := os.Getenv("DB_HOST")
@@ -26,7 +26,7 @@ func Connect()  {
 	var err error
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Failed to create a connection to database")
+		panic("Failed to create a connection to connection")
 	}
 
 	DB.AutoMigrate(&entity.User{}, &entity.UserModuleRole{}, &entity.Book{})
@@ -38,16 +38,16 @@ func Connect()  {
 	}
 	sql.SetMaxIdleConns(maxIdleCons)
 	sql.SetMaxOpenConns(maxOpenCons)
-	log.Println("successfully create database connection")
+	log.Println("successfully create connection connection")
 }
 
-func Close() {
+func CloseDB() {
 	sql, err := DB.DB()
 	if err != nil {
 		panic("failed to get sql from DB()")
 	}
 	if err := sql.Close(); err != nil {
-		panic("failed to close database connection")
+		panic("failed to close connection connection")
 	}
-	log.Println("successfully close database connection")
+	log.Println("successfully close connection connection")
 }

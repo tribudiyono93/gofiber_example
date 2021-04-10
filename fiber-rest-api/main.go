@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
-	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/database"
+	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/connection"
 	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/router"
 	"log"
 	"os"
@@ -19,8 +19,8 @@ func main() {
 		panic("Failed to load env file")
 	}
 
-	//connect and defer close database
-	database.Connect()
+	//connect and defer close connection
+	connection.ConnectDB()
 
 	app := fiber.New()
 	app.Use(cors.New())
@@ -45,6 +45,6 @@ func main() {
 
 	//clean up resource
 	log.Println("clean up resource")
-	database.Close()
+	connection.CloseDB()
 	log.Println("successfully graceful shutdown")
 }
