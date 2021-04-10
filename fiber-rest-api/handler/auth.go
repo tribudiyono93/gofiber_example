@@ -22,6 +22,11 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(response.StatusText[response.InternalServerError])
 	}
 
+	errors := request.Validate(req)
+	if errors != nil {
+		return c.Status(http.StatusBadRequest).JSON(errors)
+	}
+
 	var user entity.User
 	connection.DB.Where("email = ?", req.Email).First(&user)
 	if user.ID != "" {
@@ -59,6 +64,11 @@ func Login(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		log.Println(err)
 		return c.Status(http.StatusInternalServerError).JSON(response.StatusText[response.InternalServerError])
+	}
+
+	errors := request.Validate(req)
+	if errors != nil {
+		return c.Status(http.StatusBadRequest).JSON(errors)
 	}
 
 	var user entity.User
