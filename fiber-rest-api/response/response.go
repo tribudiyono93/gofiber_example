@@ -15,7 +15,7 @@ var StatusText = map[int]string{
 	UserAlreadyExist:       "user already exist",
 	EmailAlreadyUsed:       "email already used",
 	InvalidEmailOrPassword: "invalid email or password",
-	InternalServerError: "internal server error",
+	InternalServerError:    "internal server error",
 }
 
 type Error struct {
@@ -33,4 +33,5 @@ type Pageable struct {
 type UserDetail struct {
 	User            entity.User             `json:"user"`
 	UserModuleRoles []entity.UserModuleRole `json:"userModuleRoles"`
+	Token           string                  `json:"token,omitempty"`
 }
