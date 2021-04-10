@@ -8,7 +8,7 @@ import (
 	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/entity"
 	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/request"
 	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/response"
-	"github.com/tribudiyono93/gofiber_example/fiber-rest-api/util"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +32,7 @@ func Register(c *fiber.Ctx) error {
 	base := entity.Base{
 		CreatedBy: req.Email, CreatedAt: time.Now(), UpdatedBy: req.Email, UpdatedAt: time.Now(),
 	}
-	hash, err := util.HashPassword(req.Password)
+	hash, err := hashPassword(req.Password)
 	if err != nil {
 		log.Println(err)
 		return c.Status(http.StatusInternalServerError).JSON(response.StatusText[response.InternalServerError])
@@ -68,7 +68,7 @@ func Login(c *fiber.Ctx) error {
 			Code: response.UserNotFound, Message: response.StatusText[response.UserNotFound]})
 	}
 
-	if !util.CheckPasswordHash(req.Password, user.Password) {
+	if !checkPasswordHash(req.Password, user.Password) {
 		return c.Status(http.StatusBadRequest).JSON(response.Error{
 			Code: response.InvalidEmailOrPassword, Message: response.StatusText[response.InvalidEmailOrPassword]})
 	}
@@ -76,9 +76,14 @@ func Login(c *fiber.Ctx) error {
 	var userModuleRoles []entity.UserModuleRole
 	connection.DB.Where("email = ?", user.Email).Find(&userModuleRoles)
 
-	claims := jwt.MapClaims{}
-	claims["email"] = user.Email
-	claims["exp"] = time.Now().Add(60 * time.Minute)
+	claims := jwt.StandardClaims{
+		Subject: user.Email,
+		ExpiresAt: time.Now().Local().Add(60 * time.Minute).Unix(),
+		Issuer: os.Getenv("JWT_ISSUER"),
+		IssuedAt: time.Now().Local().Unix(),
+		Audience: os.Getenv("JWT_AUDIENCE"),
+	}
+
 	j := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := j.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
@@ -87,4 +92,14 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(response.UserDetail{User: user, UserModuleRoles: userModuleRoles, Token: token})
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
