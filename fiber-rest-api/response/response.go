@@ -10,16 +10,12 @@ const (
 	InternalServerError    = 9999
 )
 
-var statusText = map[int]string{
+var StatusText = map[int]string{
 	UserNotFound:           "user not found",
 	UserAlreadyExist:       "user already exist",
 	EmailAlreadyUsed:       "email already used",
 	InvalidEmailOrPassword: "invalid email or password",
 	InternalServerError:    "internal server error",
-}
-
-func StatusText(code int) string {
-	return statusText[code]
 }
 
 type Error struct {
