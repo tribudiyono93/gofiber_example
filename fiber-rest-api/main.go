@@ -24,7 +24,9 @@ func main() {
 
 	app := fiber.New()
 	app.Use(cors.New())
-	app.Use(logger.New())
+	app.Use(logger.New(logger.Config{
+		Format: "${pid} ${locals:requestid} ${status} - ${method} ${path}\n",
+	}))
 	app.Use(recover.New())
 
 	//register router

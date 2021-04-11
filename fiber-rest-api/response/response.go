@@ -33,5 +33,10 @@ type Pageable struct {
 type UserDetail struct {
 	User            entity.User             `json:"user"`
 	UserModuleRoles []entity.UserModuleRole `json:"userModuleRoles"`
-	Token           string                  `json:"token,omitempty"`
+}
+
+type JWTToken struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	ExpiresAt    int64  `json:"expiresAt"`
 }

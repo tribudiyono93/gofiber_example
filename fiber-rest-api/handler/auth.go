@@ -83,25 +83,40 @@ func Login(c *fiber.Ctx) error {
 			Code: response.InvalidEmailOrPassword, Message: response.StatusText[response.InvalidEmailOrPassword]})
 	}
 
-	var userModuleRoles []entity.UserModuleRole
-	connection.DB.Where("email = ?", user.Email).Find(&userModuleRoles)
-
-	claims := jwt.StandardClaims{
+	accessTokenExp := time.Now().Local().Add(60 * time.Minute).Unix()
+	atClaims := jwt.StandardClaims{
 		Subject: user.Email,
-		ExpiresAt: time.Now().Local().Add(60 * time.Minute).Unix(),
+		ExpiresAt: accessTokenExp,
 		Issuer: os.Getenv("JWT_ISSUER"),
 		IssuedAt: time.Now().Local().Unix(),
 		Audience: os.Getenv("JWT_AUDIENCE"),
 	}
 
-	j := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := j.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	j := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+	accessToken, err := j.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		log.Println(err)
 		return c.Status(http.StatusInternalServerError).JSON(response.StatusText[response.InternalServerError])
 	}
 
-	return c.Status(http.StatusOK).JSON(response.UserDetail{User: user, UserModuleRoles: userModuleRoles, Token: token})
+	refreshTokenExp := time.Now().Local().Add(24 * 7 * time.Hour).Unix()
+	rtClaims := jwt.StandardClaims{
+		Subject: user.Email,
+		ExpiresAt: refreshTokenExp,
+		Issuer: os.Getenv("JWT_ISSUER"),
+		IssuedAt: time.Now().Local().Unix(),
+		Audience: os.Getenv("JWT_AUDIENCE"),
+	}
+
+	j = jwt.NewWithClaims(jwt.SigningMethodHS256, rtClaims)
+	refreshToken, err := j.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		log.Println(err)
+		return c.Status(http.StatusInternalServerError).JSON(response.StatusText[response.InternalServerError])
+	}
+
+	return c.Status(http.StatusOK).JSON(response.JWTToken{
+		AccessToken: accessToken, RefreshToken: refreshToken, ExpiresAt: accessTokenExp})
 }
 
 func hashPassword(password string) (string, error) {
