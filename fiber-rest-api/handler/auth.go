@@ -119,6 +119,11 @@ func Login(c *fiber.Ctx) error {
 		AccessToken: accessToken, RefreshToken: refreshToken, ExpiresAt: accessTokenExp})
 }
 
+func RefreshToken(c *fiber.Ctx) error {
+
+	return c.SendString("ok dulu")
+}
+
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
