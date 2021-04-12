@@ -28,6 +28,7 @@ func Register(app *fiber.App) {
 	auth := api.Group("/auth")
 	auth.Post("/register", handler.Register)
 	auth.Post("/login", handler.Login)
+	auth.Post("refresh-token", handler.RefreshToken)
 
 	secure := api.Group("/secure", middleware.ValidateJWT())
 

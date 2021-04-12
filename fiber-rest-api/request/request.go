@@ -41,5 +41,9 @@ type Login struct {
 	Password        string                  `json:"password" validate:"required"`
 }
 
+type RefreshJWTToken struct {
+	RefreshToken string `json:"refreshToken" validate:"required"`
+}
+
 type CreateBook struct {
 }
